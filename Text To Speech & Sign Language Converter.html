@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Text To Speech & Sign Language Converter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=0.8">
+  <style>
+ body { 
+display: flex; 
+flex-direction: column; 
+align-items: center; 
+justify-content: center; 
+min-height: 80vh; 
+background-image: url("bg1.jpg");
+background-size: cover;
+z-index: -1;
+background-attachment: fixed; 
+background-color: #f5f5f5; 
+font-family: Arial, sans-serif;
+ }
+
+.wrapper { 
+text-align: center; 
+border: 3px double #add8e6;
+border-radius: 2px;
+background-blend-mode: hue;
+background-image: url("bg2.jpg"), linear-gradient(to bottom, #FD5E53, #FFA07A);
+animation: wrapper 6s infinite;
+-webkit-backdrop-filter: blur(1px);
+backdrop-filter: blur(1px);
+background-position: center;
+box-shadow: 0px 0px 3px 5px #000;
+outline-style:double #4169E1;
+margin-bottom: 30px;
+padding: 20px; }
+
+.wrapper header{
+font-size: 23px;
+align-content: center;
+text-align: center;
+color: white;
+border: double 4px #add8e6;
+opacity: 0.8;
+vertical-align: middle;
+background: black;
+margin: 10px;
+padding: 5px;
+}
+
+.row { 
+display: flex; 
+flex-direction: column; 
+align-items: center; }
+
+
+hr { 
+width: 50%; 
+border: 0; 
+height: 1px; 
+background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0)); }
+
+textarea { 
+width: 80%; 
+height: 100px; 
+padding: 10px; 
+margin-bottom: 20px;
+display: inline;}
+
+.wrapper form button { 
+padding: 10px 20px; 
+background-color: #c200a8; 
+color: white; 
+border: 3px double #00d5ff; 
+border-radius: 4px;
+vertical-align: middle;
+align-items: center; 
+cursor: pointer; }
+
+form button:hover span:nth-child(1){
+filter: blur(7px);
+}
+
+form button:hover span:nth-child(2){
+filter: blur(14px);
+}
+form button:hover{
+background: linear-gradient(#5e6bbb, #805ebb, #5e9abb);
+animation: rotate 1.5s linear infinite; 
+}
+
+@media(max-width: 400px) {
+    .wrapper {
+        max-width: 345px;
+        width: 100%;	
+    }
+}
+
+@keyframes wrapper {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 0%
+  }
+}
+
+.sign-language-container { 
+display: flex; 
+flex-wrap: nowrap; 
+margin-top: 30px;
+display: inline; }
+
+.sign-language-container img { 
+height: 100px; 
+margin: 5px; 
+vertical-align: middle; 
+display: inline;
+} 
+
+.highlight { 
+border: 4px double black; } 
+
+    select {
+      margin-top: 20px;
+      padding: 10px;
+      width: 80%;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <header>Text To Speech & Sign Language Converter</header>
+    <form action="#">
+      <div class="row">
+        <hr>
+        <p>Enter Text Below</p>
+        <hr>
+        <textarea id="text1" autofocus="autofocus"></textarea>
+      </div>
+      <button id="btn1">Convert To Speech</button>
+      <select id="voicesSelect"></select>
+    </form>
+  </div>
+
+  <div class="sign-language-container">
+    <!-- Sign language images will be added here -->
+  </div>
+
+  <script>
+    const content = document.getElementById("text1");
+    const btnArea = document.getElementById("btn1");
+    const voicesSelect = document.getElementById("voicesSelect");
+
+   function populateVoices() {
+      const voices = window.speechSynthesis.getVoices();
+      const englishVoices = voices.filter(voice => voice.lang.startsWith('en'));
+
+      voicesSelect.innerHTML = ''; // Clear previous options
+
+      englishVoices.forEach(voice => {
+        const option = document.createElement("option");
+        option.value = voice.name;
+        option.textContent = voice.name;
+        voicesSelect.appendChild(option);
+      });
+    }
+
+   btnArea.addEventListener("click", () => {
+      const utterance = new SpeechSynthesisUtterance(content.value);
+      const selectedVoiceName = voicesSelect.value;
+      const voices = window.speechSynthesis.getVoices();
+      const selectedVoice = voices.find(voice => voice.name === selectedVoiceName);
+
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+        window.speechSynthesis.speak(utterance);
+      } else {
+        console.error('Selected voice not found.');
+      }
+    });
+
+    window.speechSynthesis.onvoiceschanged = populateVoices;
+    setTimeout(populateVoices, 1000);
+
+    const signLanguageContainer = document.querySelector(".sign-language-container");
+    const alphabet = {"A": "a.png", "B": "b.png", "C":"c.png", "D":"d.png","E":"e.png", "F":"f.png", "G":"g.png", "H":"h.png", "I":"i.png", "J":"j.png", "K":"k.png", "L":"l.png", "M":"m.png", "N":"n.png", "O":"o.png", "P":"p.png", "Q":"q.png", "R":"r.png", "S":"s.png", "T":"t.png", "U":"u.png", "V":"v.png", "W":"w.png", "X":"x.png", "Y":"y.png", "Z":"z.png", "0":"0.png", "1":"1.png", "2":"2.png", "3":"3.png", "4":"4.png", "5":"5.png", "6":"6.png", "7":"7.png", "8":"8.png", "9":"9.png", "10":"10.png" };
+
+    content.addEventListener("input", () => {
+      let signLanguageHtml = " ";
+      for (let i = 0; i < content.value.length; i++) {
+        let letter = content.value[i].toUpperCase();
+        if (alphabet[letter]) {
+          signLanguageHtml += `<img class="${i === 0 || content.value[i - 1] === ' ' || content.value[i - 1] === '\n' ? 'highlight' : ''}" src="${alphabet[letter]}" alt="${letter}" title="${letter}">`;
+        } else if (content.value[i] === " ") {
+          signLanguageHtml += "&nbsp;<br>";
+        }
+        if (content.value[i] === "\n") {
+          signLanguageHtml += "<br>";
+        }
+      }
+      signLanguageContainer.innerHTML = signLanguageHtml;
+    });
+  </script>
+</body>
+</html>
